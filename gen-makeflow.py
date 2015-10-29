@@ -26,7 +26,6 @@ def get_files():
         '''
         fits_dir = path + "/Fits_files/"
         lst = os.listdir(fits_dir)
-        print(lst)
         write_mf(lst, fits_dir)
     except Exception, e:
         print(e)
@@ -42,7 +41,7 @@ def write_mf(fits_list, fits_path):
 
         # run ./solve-field
         makeflow.write(full_fname + ".cfg" + " : " + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field " + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg " + full_fname + "\n")
-        makeflow.write("\t/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + full_fname + " > " + full_fname + ".cfg" + "\n")
+        makeflow.write("\ttimeout 600 /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + full_fname + " > " + full_fname + ".cfg" + "\n")
         makeflow.write("\n")
 
     makeflow.close()
