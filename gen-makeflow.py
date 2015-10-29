@@ -47,7 +47,7 @@ def write_mf(fits_list, path):
 
         # modify files
         makeflow.write(path + "/comp_" + str(fit[0]) + " : " + fixcfg.py + " " + str(fit[0])+ " \n")
-        makeflow.write("\python fixcfg.py -i " + str(fit[0]) + " -o " + " comp_" + str(fit[0]) + " -n " + " comp_" + str(fit[0]) + " > " + path + "/comp_" + str(fit[0]) "\n")
+        makeflow.write("\python fixCfgAndMetaData.py -i " + str(fit[0]) + " -o " + " comp_" + str(fit[0]) + " -n " + " comp_" + str(fit[0]) + " > " + path + "/comp_" + str(fit[0]) "\n")
         makeflow.write("\n")
 
     makeflow.close()
