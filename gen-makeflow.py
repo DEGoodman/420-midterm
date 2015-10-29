@@ -30,27 +30,24 @@ def get_files():
 def write_mf(fits_list, path):
     makeflow = open(r'go.makeflow', 'w')
     sf_path = "gsfs1/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin"
-    ''' loop through all fits files and add makeflow lines
+    '''
+        /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/modified_fits/solved_<filename> : /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg <fitsfilename>
+            ./solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite <fitsfilename> > <nameofinputfile.cfg>
 
-        /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/modified_fits/<filename> : fitsdata.py + <filename>
-            python fitsdata.py <filename> > /gsfs1/xdisk/dkapellusch/midterm/data/fitsfiles/modified_fits/<filename>
+        /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/modified_fits/<filename> : fixcfg.py <inputfile>
+            python fixcfg.py -i <inputfile> -o <outputfile> -n <new filename> > /gsfs1/xdisk/dkapellusch/midterm/data/fitsfiles/modified_fits/<outputfile>
 
-
-        (row with )
-
-        /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/modified_fits/comp_<filename> : /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg <fitsfilename>
-            ./solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite <fitsfilename> > "nameofinputfile.cfg"
     '''
     for fit in fits_list:
-        # modify headers
-        makeflow.write(path + str(fit[0]) + " : " + fitsdata.py + " " + str(fit[0])+ " \n")
-        makeflow.write("\python fitsdata.py " + str(fit[0])  + " > " + path + str(fit[0]) "\n")
+        new_fname = path + str(fit[0])
+        # run ./solve-field
+        makeflow.write(path + "solved_" + fit[0] + " : "  + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg" + " " + new_fname + " \n")
+        makeflow.write("\t./solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + new_fname + " > " + path + "solved_" + fit[0])
         makeflow.write("\n")
 
-        # run ./solve-field
-        new_fname = path + str(fit[0])
-        makeflow.write(path + "comp_" + fit[0] + " : "  + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg" + " " + new_fname + " \n")
-        makeflow.write("\t./solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + new_fname + " > " + path + "comp_" + fit[0])
+        # modify files
+        makeflow.write(path + "/comp_" + str(fit[0]) + " : " + fixcfg.py + " " + str(fit[0])+ " \n")
+        makeflow.write("\python fixcfg.py -i " + str(fit[0]) + " -o " + " comp_" + str(fit[0]) + " -n " + " comp_" + str(fit[0]) + " > " + path + "/comp_" + str(fit[0]) "\n")
         makeflow.write("\n")
 
     makeflow.close()
