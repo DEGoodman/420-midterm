@@ -15,17 +15,14 @@ import os
 # read list of fits files for input
 def get_files():
     try:
-        # path = "/gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/"
-        path = "/xdisk/dkapellusch/midterm/data/test/"
+        path = "/xdisk/dkapellusch/midterm/data/"
         ''' directory structure
             data
-                |- Fits_files
-                |- test
-                    |-gen_makeflow.py
-                    |-go.makeflow
-                    |-samplefile.cfg
-                    |-two python scripts
-                    |-Fits_files (input files)
+                |-gen_makeflow.py
+                |-go.makeflow
+                |-samplefile.cfg
+                |-two python scripts
+                |-Fits_files (input files)
         '''
         fits_dir = path + "/Fits_files/"
         lst = os.listdir(fits_dir)
