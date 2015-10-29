@@ -42,12 +42,12 @@ def write_mf(fits_list, path):
         new_fname = path + str(fit[0])
         # run ./solve-field
         makeflow.write(path + "solved_" + fit[0] + " : "  + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg" + " " + new_fname + " \n")
-        makeflow.write("\t./solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + new_fname + " > " + path + "solved_" + fit[0])
+        makeflow.write("\t./solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + new_fname + " > " + path + "solved_" + fit[0] + "\n")
         makeflow.write("\n")
 
         # modify files
-        makeflow.write(path + "/comp_" + str(fit[0]) + " : " + fixcfg.py + " " + str(fit[0])+ " \n")
-        makeflow.write("\python fixCfgAndMetaData.py -i " + str(fit[0]) + " -o " + " comp_" + str(fit[0]) + " -n " + " comp_" + str(fit[0]) + " > " + path + "/comp_" + str(fit[0]) "\n")
+        makeflow.write(path + "/comp_" + str(fit[0]) + " : " + fixcfg.py + " " + str(fit[0]) + " \n")
+        makeflow.write("\python fixCfgAndMetaData.py -i " + str(fit[0]) + " -o " + " comp_" + str(fit[0]) + " -n " + " comp_" + str(fit[0]) + " > " + path + "/comp_" + str(fit[0]) + "\n")
         makeflow.write("\n")
 
     makeflow.close()
