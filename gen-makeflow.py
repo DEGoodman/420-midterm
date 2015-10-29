@@ -29,13 +29,12 @@ def get_files():
 # create makeflow file
 def write_mf(fits_list, path):
     makeflow = open(r'go.makeflow', 'w')
-    sf_path = "gsfs1/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin"
     '''
-        /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<nameofinputfile>.cfg : /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg <fitsfilename>
-            ./solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite <fitsfilename> > <nameofinputfile>.cfg
+        /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<nameofinputfile>.cfg : /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg <fitsfilename>
+            /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite <fitsfilename> > <nameofinputfile>.cfg
 
         none.txt : movefile.py /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<fitsfilename>
-            movefile.py -i <fitsfilename> > none.txt
+            python movefile.py -i <fitsfilename> > none.txt
 
         /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<filename>_updated.fits : fixcfg.py <inputfile>
             python fixCfgAndMetaData.py -i <inputfile.cfg> -o <inputfile.cfg> -n <inputfile.new> > /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<outputfile>_updated.fits
@@ -44,15 +43,16 @@ def write_mf(fits_list, path):
     for fit in fits_list:
         full_fname = path + str(fit[0])
         # run ./solve-field
-        makeflow.write(full_fname + ".cfg" + " : "  + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg" + " " + full_fname + "\n")
-        makeflow.write("\tsolve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + full_fname + " > " + full_fname + ".cfg" + "\n")
+        makeflow.write(full_fname + ".cfg" + " : " + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field "  + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg" + " " + full_fname + "\n")
+        makeflow.write("\t/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + full_fname + " > " + full_fname + ".cfg" + "\n")
         makeflow.write("\n")
 
         # 'move' files
         makeflow.write("none.txt : movefile.py " + full_fname + "\n")
-        makeflow.write("\tmovefile.py -i " + full_fname + " > none.txt")
+        makeflow.write("\tpython movefile.py -i " + full_fname + " > none.txt")
         makeflow.write("\n")
 
+        full_fname=full_fname[:-5]
         # modify files
         makeflow.write( full_fname + "_updated.fits" + " : " + fixcfg.py + " " + full_fname + ".cfg" + " \n")
         makeflow.write("\tpython fixCfgAndMetaData.py -i " + full_fname + ".cfg" + " -o " + full_fname + ".cfg" + " -n " + full_fname + ".new > " + full_fname + "_updated.fits\n")
