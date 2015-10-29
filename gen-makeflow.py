@@ -21,7 +21,7 @@ def get_files():
             data
                 |- Fits_files
                 |- test
-                    |-gen_makeflow
+                    |-gen_makeflow.py
                     |-go.makeflow
                     |-samplefile.cfg
                     |-two python scripts
@@ -42,24 +42,11 @@ def write_mf(fits_list, fits_path):
     count = 0
     for fit in fits_list:
         full_fname = fits_path + str(fit)
-        # base_fname = path + str(fit)
 
         # run ./solve-field
         makeflow.write(full_fname + ".cfg" + " : " + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field " + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg " + full_fname + "\n")
         makeflow.write("\t/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + full_fname + " > " + full_fname + ".cfg" + "\n")
         makeflow.write("\n")
-
-        # # 'move' files
-        # makeflow.write("none" + str(count) + ".txt : movefile.py " + full_fname + "\n")
-        # makeflow.write("\tpython movefile.py -i " + full_fname + " > none" + str(count) + ".txt\n")
-        # makeflow.write("\n")
-        # count += 1
-        #
-        # base_fname=base_fname[:-5]
-        # # modify files
-        # makeflow.write( full_fname + "_UPDATED.fits" + " : " + "FixCfgAndMetaData.py " + full_fname + ".cfg " + base_fname + ".new \n")
-        # makeflow.write("\tpython FixCfgAndMetaData.py -i " + full_fname + ".cfg" + " -o " + full_fname + ".cfg" + " -n " + base_fname + ".new > " + full_fname + "_UPDATED.fits\n")
-        # makeflow.write("\n")
 
     makeflow.close()
 
