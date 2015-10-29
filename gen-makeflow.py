@@ -31,6 +31,7 @@ def get_files():
         lst = os.listdir(fits_dir)
         write_mf(lst, path)
     except Exception, e:
+        print(e)
         print("Could not find your fits file directory. Is it a child directory of this script?")
 
 # create makeflow file
