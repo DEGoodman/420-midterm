@@ -14,48 +14,49 @@ import os
 
 # read list of fits files for input
 def get_files():
-    path = os.getcwd() # get current working directory
     try:
-        path = "/gsfs1/xdisk/dkapellusch/midterm/data/Fits_files"
-        lst = os.listdir(path)
-        # create target directory
-        # if not os.path.exists(path + "/modified_fits/"):
-        #     new_path = os.makedirs(path + "/modified_fits/")
+        # path = "/gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/"
+        path = "/gsfs1/xdisk/dkapellusch/midterm/data/test/"
+        ''' directory structure
+            data
+                |- Fits_files
+                |- test
+                    |-gen_makeflow
+                    |-go.makeflow
+                    |-samplefile.config
+                    |-two python scripts
+                    |-Fits_files (input files)
+        '''
+        fits_dir = path + "/Fits_files/"
+        lst = os.listdir(fits_dir)
         write_mf(lst, path)
     except Exception, e:
         print("Could not find your fits file directory. Is it a child directory of this script?")
 
-
 # create makeflow file
 def write_mf(fits_list, path):
     makeflow = open(r'go.makeflow', 'w')
-    '''
-        /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<nameofinputfile>.cfg : /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg <fitsfilename>
-            /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite <fitsfilename> > <nameofinputfile>.cfg
 
-        none.txt : movefile.py /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<fitsfilename>
-            python movefile.py -i <fitsfilename> > none.txt
-
-        /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<filename>_updated.fits : fixcfg.py <inputfile>
-            python fixCfgAndMetaData.py -i <inputfile.cfg> -o <inputfile.cfg> -n <inputfile.new> > /gsfs1/xdisk/dkapellusch/midterm/data/Fits_files/<outputfile>_updated.fits
-
-    '''
+    count = 0
     for fit in fits_list:
-        full_fname = path + str(fit[0])
+        full_fname = path + "/Fits_files/" + str(fit)
+        base_fname = path + str(fit)
+
         # run ./solve-field
-        makeflow.write(full_fname + ".cfg" + " : " + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field "  + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg" + " " + full_fname + "\n")
+        makeflow.write(full_fname + ".cfg" + " : " + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field " + "/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg " + full_fname + "\n")
         makeflow.write("\t/xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/bin/solve-field -u app -L 0.3 -H 3.0 --backend-config /xdisk/dkapellusch/cfitsio_stuff/astrometry_dir/etc/astrometry.cfg  --overwrite " + full_fname + " > " + full_fname + ".cfg" + "\n")
         makeflow.write("\n")
 
         # 'move' files
-        makeflow.write("none.txt : movefile.py " + full_fname + "\n")
-        makeflow.write("\tpython movefile.py -i " + full_fname + " > none.txt")
+        makeflow.write("none" + str(count) + ".txt : movefile.py " + full_fname + "\n")
+        makeflow.write("\tpython movefile.py -i " + full_fname + " > none" + str(count) + ".txt\n")
         makeflow.write("\n")
+        count += 1
 
-        full_fname=full_fname[:-5]
+        base_fname=base_fname[:-5]
         # modify files
-        makeflow.write( full_fname + "_updated.fits" + " : " + fixcfg.py + " " + full_fname + ".cfg" + " \n")
-        makeflow.write("\tpython fixCfgAndMetaData.py -i " + full_fname + ".cfg" + " -o " + full_fname + ".cfg" + " -n " + full_fname + ".new > " + full_fname + "_updated.fits\n")
+        makeflow.write( full_fname + "_UPDATED.fits" + " : " + "FixCfgAndMetaData.py " + full_fname + ".cfg " + base_fname + ".new \n")
+        makeflow.write("\tpython FixCfgAndMetaData.py -i " + full_fname + ".cfg" + " -o " + full_fname + ".cfg" + " -n " + base_fname + ".new > " + full_fname + "_updated.fits\n")
         makeflow.write("\n")
 
     makeflow.close()
